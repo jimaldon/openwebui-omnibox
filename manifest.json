@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "OpenWebUI Omnibox",
+  "version": "1.0.0",
+  "description": "Access OpenWebUI directly from the address bar",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "omnibox": {
+    "keyword": "o"
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{c7e8aea4-9959-4f22-a7fa-06d4e3e49434}",
+      "strict_min_version": "109.0"
+    }
+  },
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png"
+  }
+}
