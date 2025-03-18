@@ -13,13 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('webSearchEnabled').checked = result.webSearchEnabled;
       }
 
-      // Display banner if flag is set
-      if (result.showUrlNeededBanner) {
+      // Display banner ONLY if flag is set AND no URL is configured yet
+      if (result.showUrlNeededBanner && !result.openWebUIUrl) {
         document.getElementById('banner').style.display = 'block';
-        // Clear the flag after showing the banner
-        api.storage.local.remove("showUrlNeededBanner");
-        // Set focus to the URL field
         document.getElementById('openWebUIUrl').focus();
+      } else {
+        // Make sure banner is hidden
+        document.getElementById('banner').style.display = 'none';
+      }
+      
+      // Always clear the flag after handling it, regardless of banner display
+      if (result.showUrlNeededBanner) {
+        api.storage.local.remove("showUrlNeededBanner");
       }
     })
     .catch(() => {});
