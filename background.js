@@ -4,6 +4,7 @@ const DEBUG = false;
 // Default configuration
 let openWebUIUrl = "";
 let webSearchEnabled = true;
+let settingsLoaded = false;
 
 // Determine which API to use (browser for Firefox, chrome for Chrome)
 const api = typeof browser !== 'undefined' ? browser : chrome;
@@ -18,8 +19,11 @@ function loadSettings() {
       if (result.webSearchEnabled !== undefined) {
         webSearchEnabled = result.webSearchEnabled;
       }
+      settingsLoaded = true;
+      if (DEBUG) console.log("Settings loaded:", openWebUIUrl, webSearchEnabled);
     })
     .catch(err => {
+      settingsLoaded = true; // Mark as loaded even on error to prevent infinite redirects
       if (DEBUG) console.error("Error loading settings:", err);
     });
 }
@@ -41,7 +45,12 @@ api.storage.onChanged.addListener((changes, areaName) => {
 });
 
 // Listen for changes to the omnibox input
-api.omnibox.onInputEntered.addListener((text, disposition) => {
+api.omnibox.onInputEntered.addListener(async (text, disposition) => {
+  // Make sure settings are loaded before proceeding
+  if (!settingsLoaded) {
+    await loadSettings();
+  }
+
   // Validate the openWebUIUrl
   if (!openWebUIUrl || openWebUIUrl === "" || (!openWebUIUrl.startsWith("http://") && !openWebUIUrl.startsWith("https://"))) {
     // Open the options page with a parameter to show the banner
