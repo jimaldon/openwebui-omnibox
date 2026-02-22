@@ -1,0 +1,15 @@
+{
+  "name": "openwebui-omnibox",
+  "version": "1.0.0",
+  "description": "OpenWebUI Omnibox browser extension for Firefox and Chrome",
+  "scripts": {
+    "build:firefox": "mkdir -p dist && cd firefox && zip -r ../dist/firefox-openwebui-omnibox.zip . -x '.*'",
+    "build:chrome": "mkdir -p dist && cd chrome && zip -r ../dist/chrome-openwebui-omnibox.zip . -x '.*'",
+    "build": "npm run build:firefox && npm run build:chrome"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jimaldon/openwebui-omnibox.git"
+  },
+  "license": "MIT"
+}
