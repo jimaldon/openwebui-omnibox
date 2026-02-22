@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Open-WebUI-Omnibox Settings</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .option-row {
+      margin-bottom: 15px;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+    }
+    input {
+      padding: 5px;
+      width: 300px;
+    }
+    button {
+      padding: 5px 10px;
+      margin-top: 10px;
+    }
+    #status {
+      color: green;
+      margin-top: 10px;
+    }
+    #banner {
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .banner-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .highlight {
+      background-color: #fff176;
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div id="banner">
+    <div class="banner-title">OpenWebUI URL Not Configured</div>
+    <p>You need to set your OpenWebUI URL below before you can use the omnibox feature.</p>
+  </div>
+
+  <h1>Open-WebUI-Omnibox Settings</h1>
+  
+  <div class="option-row">
+    <label for="openWebUIUrl">Open-WebUI URL:</label>
+    <input type="url" id="openWebUIUrl" placeholder="https://<openwebui>" required />
+  </div>
+  
+  <div class="option-row">
+    <label for="webSearchEnabled">Enable Web Search:</label>
+    <input type="checkbox" id="webSearchEnabled" checked />
+  </div>
+  
+  <button id="save">Save</button>
+  <div id="status"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>

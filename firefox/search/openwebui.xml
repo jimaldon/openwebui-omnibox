@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>OpenWebUI</ShortName>
+  <Description>Ask AI using OpenWebUI</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16" type="image/x-icon">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAjklEQVQ4jWNgGAWMUDavqZklwcDozcTAoMjAwPCfgYHhLAMDw+qbx2fvw2kAMyNTJgMDQwEDA4MihnomBoazDA4sAQwMDE/QdDIzMTAwMGQyMDDsY2BgcGBgYHjCwMBwGV0/E4SezWDK8Cnnhihj+v/g530GBgYGJgYGBnmIIGrUMDAwXIaa8BhdCVwMF2BkYAAAC9YQ8QnjzPUAAAAASUVORK5CYII=</Image>
+  <Url type="text/html" method="GET" template="{searchTerms}"/>
+</OpenSearchDescription>
