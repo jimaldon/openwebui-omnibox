@@ -3,6 +3,7 @@ const DEBUG = false;
 
 // Default configuration
 let openWebUIUrl = "";
+let openWebUIModel = "";
 let webSearchEnabled = true;
 let settingsLoaded = false;
 
@@ -11,11 +12,14 @@ const api = typeof browser !== 'undefined' ? browser : chrome;
 
 // Build a search URL by parsing the configured base URL and merging in the
 // query parameters, rather than blindly concatenating strings.
-function buildSearchUrl(baseUrl, query, webSearchEnabled) {
+function buildSearchUrl(baseUrl, query, webSearchEnabled, model) {
   const url = new URL(baseUrl);
   url.searchParams.set("q", query);
   if (webSearchEnabled) {
     url.searchParams.set("web-search", "true");
+  }
+  if (model) {
+    url.searchParams.set("model", model);
   }
   return url.toString();
 }
@@ -35,16 +39,19 @@ function parseOpenWebUIUrl(value) {
 
 // Function to load settings from storage
 function loadSettings() {
-  return api.storage.local.get(["openWebUIUrl", "webSearchEnabled"])
+  return api.storage.local.get(["openWebUIUrl", "openWebUIModel", "webSearchEnabled"])
     .then((result) => {
       if (result.openWebUIUrl) {
         openWebUIUrl = result.openWebUIUrl;
+      }
+      if (result.openWebUIModel !== undefined) {
+        openWebUIModel = result.openWebUIModel;
       }
       if (result.webSearchEnabled !== undefined) {
         webSearchEnabled = result.webSearchEnabled;
       }
       settingsLoaded = true;
-      if (DEBUG) console.log("Settings loaded:", openWebUIUrl, webSearchEnabled);
+      if (DEBUG) console.log("Settings loaded:", openWebUIUrl, openWebUIModel, webSearchEnabled);
     })
     .catch(err => {
       settingsLoaded = true; // Mark as loaded even on error to prevent infinite redirects
@@ -61,6 +68,10 @@ api.storage.onChanged.addListener((changes, areaName) => {
   
   if (changes.openWebUIUrl) {
     openWebUIUrl = changes.openWebUIUrl.newValue;
+  }
+  
+  if (changes.openWebUIModel) {
+    openWebUIModel = changes.openWebUIModel.newValue;
   }
   
   if (changes.webSearchEnabled) {
@@ -88,7 +99,7 @@ api.omnibox.onInputEntered.addListener(async (text, disposition) => {
   }
 
   // Construct the query URL
-  const url = buildSearchUrl(openWebUIUrl, text, webSearchEnabled);
+  const url = buildSearchUrl(openWebUIUrl, text, webSearchEnabled, openWebUIModel);
 
   // Open the URL based on disposition
   try {
