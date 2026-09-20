@@ -3,10 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const api = typeof browser !== 'undefined' ? browser : chrome;
   
   // Check if we should show the banner
-  api.storage.local.get(["openWebUIUrl", "webSearchEnabled", "showUrlNeededBanner"])
+  api.storage.local.get(["openWebUIUrl", "openWebUIModel", "webSearchEnabled", "showUrlNeededBanner"])
     .then((result) => {
       if (result.openWebUIUrl) {
         document.getElementById('openWebUIUrl').value = result.openWebUIUrl;
+      }
+      
+      if (result.openWebUIModel !== undefined) {
+        document.getElementById('openWebUIModel').value = result.openWebUIModel;
       }
       
       if (result.webSearchEnabled !== undefined) {
@@ -32,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Save settings when the save button is clicked
   document.getElementById('save').addEventListener('click', () => {
     let openWebUIUrl = document.getElementById('openWebUIUrl').value.trim();
+    const openWebUIModel = document.getElementById('openWebUIModel').value.trim();
     const webSearchEnabled = document.getElementById('webSearchEnabled').checked;
     
     // Validate URL
@@ -43,12 +48,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add http:// prefix if the URL doesn't start with http:// or https://
     if (!openWebUIUrl.startsWith("http://") && !openWebUIUrl.startsWith("https://")) {
       openWebUIUrl = "http://" + openWebUIUrl;
-      document.getElementById('openWebUIUrl').value = openWebUIUrl;
     }
+
+    // Ensure the URL is well-formed and uses http(s)
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(openWebUIUrl);
+    } catch (err) {
+      parsedUrl = null;
+    }
+    if (!parsedUrl || (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:")) {
+      alert("Please enter a valid OpenWebUI URL");
+      return;
+    }
+    document.getElementById('openWebUIUrl').value = openWebUIUrl;
 
     // Save settings
     api.storage.local.set({ 
       openWebUIUrl, 
+      openWebUIModel,
       webSearchEnabled 
     })
     .then(() => {

@@ -6,6 +6,7 @@ A browser extension that lets you quickly search your OpenWebUI instance directl
 
 - 🚀 Access OpenWebUI directly from your browser's address bar
 - ⚙️ Custom OpenWebUI URL configuration
+- 🧩 Optional default model selection
 - 🔍 Optional web search integration
 - 🦊 Firefox support
 - 🌐 Chrome support
@@ -69,8 +70,9 @@ openwebui-omnibox/
 
 1. After installation, go to the extension's preferences/options
 2. Set your OpenWebUI URL (e.g., `http://localhost:3000` or `https://your-openwebui-instance.com`)
-3. Toggle "Enable Web Search" as desired
-4. Click "Save"
+3. Optionally set a **Default Model** (a model name/tag, e.g. `gpt-4o`) to launch searches with that model preselected
+4. Toggle "Enable Web Search" as desired
+5. Click "Save"
 
 To use:
 1. In the address bar, type `o` followed by a space
