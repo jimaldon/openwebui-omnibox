@@ -86,6 +86,31 @@ for (const dir of EXTENSIONS) {
     );
   });
 
+  test(`[${dir}] model param is added when configured`, () => {
+    assert.equal(
+      buildSearchUrl("https://host/", "hello", true, "gpt-4o"),
+      "https://host/?q=hello&web-search=true&model=gpt-4o"
+    );
+  });
+
+  test(`[${dir}] model param is omitted when empty`, () => {
+    assert.equal(
+      buildSearchUrl("https://host/", "hello", true, ""),
+      "https://host/?q=hello&web-search=true"
+    );
+    assert.equal(
+      buildSearchUrl("https://host/", "hello", true),
+      "https://host/?q=hello&web-search=true"
+    );
+  });
+
+  test(`[${dir}] model param is merged with an existing query string`, () => {
+    assert.equal(
+      buildSearchUrl("https://host/?foo=bar", "hello", false, "my-model"),
+      "https://host/?foo=bar&q=hello&model=my-model"
+    );
+  });
+
   test(`[${dir}] web-search param is omitted when disabled`, () => {
     assert.equal(
       buildSearchUrl("https://host/p/", "hello", false),

@@ -3,10 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const api = typeof browser !== 'undefined' ? browser : chrome;
   
   // Check if we should show the banner
-  api.storage.local.get(["openWebUIUrl", "webSearchEnabled", "showUrlNeededBanner"])
+  api.storage.local.get(["openWebUIUrl", "openWebUIModel", "webSearchEnabled", "showUrlNeededBanner"])
     .then((result) => {
       if (result.openWebUIUrl) {
         document.getElementById('openWebUIUrl').value = result.openWebUIUrl;
+      }
+      
+      if (result.openWebUIModel !== undefined) {
+        document.getElementById('openWebUIModel').value = result.openWebUIModel;
       }
       
       if (result.webSearchEnabled !== undefined) {
@@ -32,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Save settings when the save button is clicked
   document.getElementById('save').addEventListener('click', () => {
     let openWebUIUrl = document.getElementById('openWebUIUrl').value.trim();
+    const openWebUIModel = document.getElementById('openWebUIModel').value.trim();
     const webSearchEnabled = document.getElementById('webSearchEnabled').checked;
     
     // Validate URL
@@ -61,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save settings
     api.storage.local.set({ 
       openWebUIUrl, 
+      openWebUIModel,
       webSearchEnabled 
     })
     .then(() => {
