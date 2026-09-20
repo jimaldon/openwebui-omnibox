@@ -43,8 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add http:// prefix if the URL doesn't start with http:// or https://
     if (!openWebUIUrl.startsWith("http://") && !openWebUIUrl.startsWith("https://")) {
       openWebUIUrl = "http://" + openWebUIUrl;
-      document.getElementById('openWebUIUrl').value = openWebUIUrl;
     }
+
+    // Ensure the URL is well-formed and uses http(s)
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(openWebUIUrl);
+    } catch (err) {
+      parsedUrl = null;
+    }
+    if (!parsedUrl || (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:")) {
+      alert("Please enter a valid OpenWebUI URL");
+      return;
+    }
+    document.getElementById('openWebUIUrl').value = openWebUIUrl;
 
     // Save settings
     api.storage.local.set({ 

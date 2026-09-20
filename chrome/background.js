@@ -4,6 +4,30 @@ const DEBUG = false;
 // Determine which API to use (browser for Firefox, chrome for Chrome)
 const api = typeof browser !== 'undefined' ? browser : chrome;
 
+// Build a search URL by parsing the configured base URL and merging in the
+// query parameters, rather than blindly concatenating strings.
+function buildSearchUrl(baseUrl, query, webSearchEnabled) {
+  const url = new URL(baseUrl);
+  url.searchParams.set("q", query);
+  if (webSearchEnabled) {
+    url.searchParams.set("web-search", "true");
+  }
+  return url.toString();
+}
+
+// Return a parsed URL when the value is a usable http(s) URL, otherwise null.
+function parseOpenWebUIUrl(value) {
+  if (!value) return null;
+  let url;
+  try {
+    url = new URL(value);
+  } catch (err) {
+    return null;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+  return url;
+}
+
 // Function to load settings from storage
 function loadSettings() {
   return api.storage.local.get(["openWebUIUrl", "webSearchEnabled"])
@@ -27,7 +51,7 @@ api.omnibox.onInputEntered.addListener(async (text, disposition) => {
   const { openWebUIUrl, webSearchEnabled } = await loadSettings();
 
   // Validate the openWebUIUrl
-  if (!openWebUIUrl || openWebUIUrl === "" || (!openWebUIUrl.startsWith("http://") && !openWebUIUrl.startsWith("https://"))) {
+  if (!parseOpenWebUIUrl(openWebUIUrl)) {
     // Open the options page with a parameter to show the banner
     api.runtime.openOptionsPage().then(() => {
       // Save a flag that we should show the URL needed banner
@@ -39,9 +63,7 @@ api.omnibox.onInputEntered.addListener(async (text, disposition) => {
   }
 
   // Construct the query URL
-  const queryParam = encodeURIComponent(text);
-  const searchParam = webSearchEnabled ? "&web-search=true" : "";
-  const url = `${openWebUIUrl}/?q=${queryParam}${searchParam}`;
+  const url = buildSearchUrl(openWebUIUrl, text, webSearchEnabled);
 
   // Open the URL based on disposition
   try {
