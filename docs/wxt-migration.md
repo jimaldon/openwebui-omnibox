@@ -486,4 +486,70 @@ Preconditions checked:
 - `search/openwebui.xml` is confirmed unreferenced by either manifest (checked
   both `manifest.json` files and the options pages).
 
+## 13. Phase 5 verification record
+
+Automated checks run on the branch (commands reproducible locally):
+
+Generated manifest assertions — all pass:
+
+- `manifest_version` is `3` in **both** builds (Firefox is MV3, not WXT's MV2
+  default) — R3 closed.
+- Firefox emits `background.scripts`; Chrome emits
+  `background.service_worker` — matches the old trees.
+- Chrome production `permissions` are exactly `["storage"]`; the Firefox-only
+  `tabs` permission is dropped — R7 addressed. `tabs.create({url})` /
+  `tabs.update({url})` do not require the `tabs` permission, so dispositions are
+  unaffected.
+- `browser_specific_settings.gecko.id` is
+  `{c7e8aea4-9959-4f22-a7fa-06d4e3e49434}` and `strict_min_version` is `109.0`
+  — invariants 1 and 7 preserved.
+- `browser_specific_settings.gecko.data_collection_permissions.required` is
+  `["none"]` (declared per §5/R13).
+- `options_ui.open_in_tab` is `true` in both builds — R4 closed.
+- `name` = `OpenWebUI Omnibox`, `description` = `Access OpenWebUI directly from
+  the address bar`, `omnibox.keyword` = `o` — invariants 4 and 5 preserved.
+
+Full field-by-field diff of generated vs. old hand-written manifests. Remaining
+differences, all intentional and internal:
+
+| Field | Old | New | Why |
+|---|---|---|---|
+| `icons.48/96` | `icons/icon48.png` | `icon/48.png` | WXT auto-discovery (paths are internal) |
+| `options_ui.page` | `options/options.html` | `options.html` | WXT bundles the entrypoint to the output root |
+| `permissions` (Firefox only) | `["tabs","storage"]` | `["storage"]` | §0 default #3 |
+| `version` | `1.0.1` / `1.0.0` | from `package.json` | fixed to `1.0.2` in Phase 6 |
+
+Behavior tests (`npm test`, vitest) — 19 passing:
+
+- 14 pure URL cases, ported 1:1 from the old suite (Phase 2).
+- 5 background-handler cases run against WXT's `fakeBrowser`
+  (`test/background.test.ts`): `currentTab`, `newForegroundTab`,
+  `newBackgroundTab` (inactive), model/web-search parameter propagation, and the
+  unconfigured-URL → `openOptionsPage()` + `showUrlNeededBanner` flow. This
+  substitutes for the interactive keyboard-disposition smoke test, which cannot
+  be driven from this environment.
+
+`web-ext lint --source-dir .output/firefox-mv3`: **0 errors**, 2 warnings
+(`KEY_FIREFOX_UNSUPPORTED_BY_MIN_VERSION` /
+`KEY_FIREFOX_ANDROID_UNSUPPORTED_BY_MIN_VERSION`). Both fire because
+`data_collection_permissions` is only *recognised* from Firefox 140 while
+`strict_min_version` is pinned at 109. The key is ignored by older Firefox
+releases, so this is cosmetic, but the owner may prefer to drop the declaration
+(we are an existing listing and therefore exempt) to get a clean lint. Left as
+declared per the Phase 5 checklist.
+
+Storage-survival check (invariant 2, R2): the four keys
+(`openWebUIUrl`, `openWebUIModel`, `webSearchEnabled`, `showUrlNeededBanner`)
+and the `storage.local` namespace are unchanged — verified in source and in the
+built bundles. No migration is performed, so existing installs keep their
+settings by construction.
+
+Still manual (cannot be done from this environment; required before merge/release):
+
+- [ ] Load `.output/chrome-mv3` unpacked in Chrome; smoke-test `o <query>` Enter /
+      Alt+Enter / Ctrl+Enter and the options round-trip.
+- [ ] Load `.output/firefox-mv3` via `about:debugging`; repeat the smoke test.
+- [ ] Install an old build, set options, install the new build over it in the
+      same profile, confirm settings survive.
+
 
