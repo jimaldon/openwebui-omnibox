@@ -87,22 +87,53 @@ Example: `o what is the capital of France?`
 - **Alt+Enter**: Search in a new tab
 - **Ctrl+Enter**: Search in a background tab
 
-## Building
-
-Package the extensions into zip files for distribution:
+## Development
 
 ```bash
-# Build both extensions
-npm run build
-
-# Build Firefox only
-npm run build:firefox
-
-# Build Chrome only
-npm run build:chrome
+npm install            # installs deps and runs `wxt prepare`
+npm run dev            # Chrome, with HMR (.output/chrome-mv3)
+npm run dev:firefox    # Firefox, with HMR (.output/firefox-mv3)
 ```
 
-Output zip files are placed in the `dist/` directory.
+## Building
+
+The extension is built with [WXT](https://wxt.dev/). The version in
+`package.json` is written into every generated manifest.
+
+```bash
+# Build Chrome -> .output/chrome-mv3
+npm run build
+
+# Build Firefox -> .output/firefox-mv3
+npm run build:firefox
+```
+
+## Packaging for stores
+
+```bash
+# Chrome Web Store zip
+npm run zip
+
+# Firefox zip + AMO source zip
+npm run zip:firefox
+```
+
+Output archives are written to `.output/`:
+`openwebui-omnibox-<version>-chrome.zip`,
+`openwebui-omnibox-<version>-firefox.zip`, and
+`openwebui-omnibox-<version>-sources.zip`.
+
+### Building from source (Firefox / AMO reviewers)
+
+`npm run zip:firefox` also emits `openwebui-omnibox-<version>-sources.zip`.
+To reproduce the submitted Firefox build from it:
+
+```bash
+unzip openwebui-omnibox-<version>-sources.zip -d openwebui-omnibox-src
+cd openwebui-omnibox-src
+npm ci
+npm run build:firefox   # -> .output/firefox-mv3
+```
 
 ## Troubleshooting
 

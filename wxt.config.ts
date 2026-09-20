@@ -6,6 +6,11 @@ export default defineConfig({
   srcDir: '.',
   outDir: '.output',
   manifestVersion: 3,
+  zip: {
+    // `skills-lock.json` is a local agent-tooling artifact; keep it out of the
+    // AMO sources zip (WXT does not read .gitignore for sources).
+    excludeSources: ['skills-lock.json'],
+  },
   manifest: ({ browser }) => ({
     name: 'OpenWebUI Omnibox',
     description: 'Access OpenWebUI directly from the address bar',
