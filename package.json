@@ -11,6 +11,7 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "typecheck": "tsc --noEmit",
+    "check:version": "node scripts/check-version-consistency.mjs",
     "check:chrome": "node scripts/validate-chrome-credentials.mjs",
     "test": "vitest run",
     "test:watch": "vitest",

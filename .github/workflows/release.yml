@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -39,6 +41,21 @@ jobs:
         run: |
           npm run zip
           npm run zip:firefox
+
+      - name: Check version consistency
+        run: |
+          npm run check:version
+          VERSION=$(node -p "require('./package.json').version")
+          if git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
+            TAG_COMMIT=$(git rev-list -n1 "v${VERSION}")
+            if [ "$TAG_COMMIT" != "$GITHUB_SHA" ]; then
+              echo "::error::Tag v${VERSION} already exists at ${TAG_COMMIT}, not ${GITHUB_SHA}. Bump the version."
+              exit 1
+            fi
+            echo "Tag v${VERSION} already points at this commit; OK."
+          else
+            echo "Tag v${VERSION} does not exist yet; it will be created."
+          fi
 
       - name: Validate Chrome credentials
         env:

@@ -606,6 +606,13 @@ exists on the default branch, so the first dry run must be triggered *after* the
 branch is merged to `main` (`Actions → Release → Run workflow`, leave
 `dry_run=true`).
 
+**Version guard.** `scripts/check-version-consistency.mjs`
+(`npm run check:version`, R6) asserts that both generated manifests carry the
+`package.json` version. CI runs it after the two builds; the release workflow
+runs it (with `fetch-depth: 0`) before submitting and also fails if a
+`v<version>` tag already exists at a different commit, so a version cannot be
+silently reused across builds.
+
 ## 15. Phase 9 record — cutover
 
 - Deleted the `chrome/` and `firefox/` trees (`git rm -r`), which also removes
