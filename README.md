@@ -1,6 +1,15 @@
 # OpenWebUI Omnibox
 
-A browser extension that lets you quickly search your OpenWebUI instance directly from the address bar. Available for **Firefox** and **Chrome**.
+A browser extension that lets you quickly search your OpenWebUI instance directly from the address bar. Available for **Chrome** and **Firefox**.
+
+<div align="center">
+
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/openwebui-omnibox/fmklnfbnlgmaiodapdikpcmfkmlladlj"><img src="docs/badges/chrome-web-store.png" alt="Available in the Chrome Web Store"></a>
+  <a href="https://addons.mozilla.org/firefox/addon/openwebui-omnibox/"><img src="docs/badges/firefox-addon.png" alt="Get the Firefox Add-on"></a>
+</p>
+
+<b>Install directly from the <a href="https://chromewebstore.google.com/detail/openwebui-omnibox/fmklnfbnlgmaiodapdikpcmfkmlladlj">Chrome Web Store</a> | <a href="https://addons.mozilla.org/firefox/addon/openwebui-omnibox/">Firefox Add-ons</a></b></div>
 
 ## Features
 
