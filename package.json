@@ -14,6 +14,7 @@
     "check:chrome": "node scripts/validate-chrome-credentials.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:chrome-e2e": "node scripts/chrome-e2e.mjs",
     "postinstall": "wxt prepare"
   },
   "repository": {
