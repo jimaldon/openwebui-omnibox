@@ -105,6 +105,18 @@ npm run typecheck
 npm test
 ```
 
+There is also an optional end-to-end smoke test that loads the built Chrome
+extension into a local headless Chrome and checks the service worker, options
+page, and settings round-trip (`npm run build` first):
+
+```bash
+npm run test:chrome-e2e          # uses a detected Chrome/Chromium
+CHROME_PATH=/path/to/chrome npm run test:chrome-e2e
+```
+
+It is not part of CI and cannot exercise the omnibox itself (there is no API to
+fire its events), so the `o <query>` shortcuts still need a manual check.
+
 ## Building
 
 The extension is built with [WXT](https://wxt.dev/). The version in

@@ -621,8 +621,13 @@ branch is merged to `main` (`Actions → Release → Run workflow`, leave
 - After deletion the AMO `-sources.zip` no longer contains the old two-tree
   sources, so the reviewed source matches the single-tree build.
 
-Remaining before the first real submission: the interactive browser smoke tests
-in §13 (Firefox was load-verified here with `web-ext run`; Chrome cannot be
-loaded from the CLI on Chrome 153 and must be tested manually).
+Remaining before the first real submission: the interactive browser checks in
+§13. Both built extensions are now load-verified here — Firefox via
+`web-ext run`, and Chrome via `npm run test:chrome-e2e`
+(`scripts/chrome-e2e.mjs`), which loads the build through the CDP
+`Extensions.loadUnpacked` command because Chrome ignores `--load-extension`, and
+asserts the service worker, options page, and storage round-trip. The only part
+that still cannot be automated is the omnibox interaction itself (`o <query>`
+with Enter / Alt+Enter / Ctrl+Enter), which has no scripting API.
 
 
