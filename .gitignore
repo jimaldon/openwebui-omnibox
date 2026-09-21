@@ -1,0 +1,11 @@
+node_modules/
+.output/
+.wxt/
+.env*
+.env.submit
+dist/
+
+# Local tooling artifacts, kept out of the AMO sources zip
+.aider*
+.agents/
+skills-lock.json

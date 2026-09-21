@@ -1,16 +1,29 @@
 {
   "name": "openwebui-omnibox",
-  "version": "1.0.0",
+  "version": "1.0.2",
+  "type": "module",
   "description": "OpenWebUI Omnibox browser extension for Firefox and Chrome",
   "scripts": {
-    "test": "node --test",
-    "build:firefox": "mkdir -p dist && cd firefox && zip -r ../dist/firefox-openwebui-omnibox.zip . -x '.*'",
-    "build:chrome": "mkdir -p dist && cd chrome && zip -r ../dist/chrome-openwebui-omnibox.zip . -x '.*'",
-    "build": "npm run build:firefox && npm run build:chrome"
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "typecheck": "tsc --noEmit",
+    "check:chrome": "node scripts/validate-chrome-credentials.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "postinstall": "wxt prepare"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/jimaldon/openwebui-omnibox.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "vitest": "5.0.1",
+    "wxt": "0.21.4"
+  }
 }
