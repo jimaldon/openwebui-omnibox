@@ -585,15 +585,44 @@ To close that gap, `release.yml` runs a `Validate Chrome credentials` step
 (`npm run check:chrome`, `scripts/validate-chrome-credentials.mjs`) before
 `wxt submit`, on every run including dry runs. It exchanges the refresh token at
 `oauth2.googleapis.com/token` and then performs an authenticated
-`GET chromewebstore.googleapis.com/chromewebstore/v1.1/items/{id}`, so a failure
-in the client ID/secret, the refresh token, or the item ID/ownership surfaces
-before anything is uploaded. The GET route and request shape were verified
-(unauthenticated and fake-bearer requests return 401, not 404); the success path
-still requires the real secrets to exercise.
+`GET chromewebstore.googleapis.com/chromewebstore/v1.1/items/{id}?projection=DRAFT`,
+so a failure in the client ID/secret, the refresh token, or the item ID/ownership
+surfaces before anything is uploaded.
+
+**Outcome (2026-09-21).** After merge, the dry run is green end to end: the
+Chrome refresh token exchanges and the listing read succeeds, and Firefox passes
+its real AMO call. Two issues surfaced and were fixed during bring-up:
+
+1. The listing GET requires `?projection=DRAFT`; without it the API returns
+   `400 Please append ?projection=DRAFT` (PR #9).
+2. `FIREFOX_EXTENSION_ID` must **not** be the `{…}` manifest GUID. `wxt submit`
+   strips the braces before `GET /api/v5/addons/addon/{idOrSlugOrGuid}`, and AMO
+   returns 404 for a bare GUID (while accepting the GUID *with* braces, the slug,
+   or the numeric ID). The secret was set to the numeric add-on ID `2902186`.
+   The manifest's `gecko.id` is unchanged — the secret only locates the listing.
 
 **Dispatch prerequisite.** `workflow_dispatch` only registers a workflow that
-exists on the default branch, so the first dry run must be triggered *after* this
+exists on the default branch, so the first dry run must be triggered *after* the
 branch is merged to `main` (`Actions → Release → Run workflow`, leave
 `dry_run=true`).
+
+## 15. Phase 9 record — cutover
+
+- Deleted the `chrome/` and `firefox/` trees (`git rm -r`), which also removes
+  the orphaned `search/openwebui.xml` from both (default #4).
+- `git mv` history preservation (default #6) was not re-applied here: the new
+  files were created and reviewed in Phases 2–4, so the destinations already
+  existed and a rename was no longer possible. The old content remains reachable
+  in the repo's history (commits `f9ca0ab` and earlier); `git log --follow`
+  across the rename is not expected to be seamless.
+- README rewritten: WXT project structure, build/dev commands, manual-install
+  instructions pointing at `.output/*`, the corrected `FIREFOX_EXTENSION_ID`
+  guidance, and the CWS v1.1 → v2 migration note.
+- After deletion the AMO `-sources.zip` no longer contains the old two-tree
+  sources, so the reviewed source matches the single-tree build.
+
+Remaining before the first real submission: the interactive browser smoke tests
+in §13 (Firefox was load-verified here with `web-ext run`; Chrome cannot be
+loaded from the CLI on Chrome 153 and must be tested manually).
 
 
