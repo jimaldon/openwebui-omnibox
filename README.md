@@ -130,6 +130,11 @@ npm run build
 npm run build:firefox
 ```
 
+`npm run check:version` asserts that the version in both generated manifests
+matches `package.json`. CI and the release workflow run it automatically; the
+release workflow additionally refuses to reuse a `v<version>` tag that already
+points at a different commit.
+
 ## Packaging for stores
 
 ```bash
