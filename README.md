@@ -135,6 +135,29 @@ npm ci
 npm run build:firefox   # -> .output/firefox-mv3
 ```
 
+## Releasing
+
+Releases run from the **Release** workflow (`Actions → Release → Run workflow`).
+It installs, typechecks, tests, builds both zips, and submits them to the Chrome
+Web Store and Firefox Add-ons. The `dry_run` input defaults to **true** and only
+validates credentials — set it to false to actually upload, submit for review,
+and create a GitHub release.
+
+Submissions need these repository secrets:
+
+| Secret | Source |
+|---|---|
+| `CHROME_EXTENSION_ID` | Chrome Web Store developer dashboard (existing listing) |
+| `CHROME_CLIENT_ID` / `CHROME_CLIENT_SECRET` / `CHROME_REFRESH_TOKEN` | Google Cloud OAuth client (CWS API v1.1) |
+| `FIREFOX_EXTENSION_ID` | `{c7e8aea4-9959-4f22-a7fa-06d4e3e49434}` |
+| `FIREFOX_JWT_ISSUER` / `FIREFOX_JWT_SECRET` | https://addons.mozilla.org/developers/addon/api/key/ |
+
+Note: the Chrome Web Store API **v1.1** credentials above are deprecated and stop
+working **2026-10-15**. Before then, create a Google service account with access
+to the listing and switch the workflow to API **v2**
+(`CHROME_API_VERSION: v2`, `CHROME_PUBLISHER_ID`,
+`CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL`, `CHROME_SERVICE_ACCOUNT_PRIVATE_KEY`).
+
 ## Troubleshooting
 
 - If nothing happens when you enter a query, make sure you've configured a valid OpenWebUI URL in the extension options

@@ -552,4 +552,39 @@ Still manual (cannot be done from this environment; required before merge/releas
 - [ ] Install an old build, set options, install the new build over it in the
       same profile, confirm settings survive.
 
+## 14. Phase 8 record — release automation
+
+Implemented `.github/workflows/release.yml`: manual `workflow_dispatch` with a
+`dry_run` boolean input (**default `true`**) → install → typecheck → test →
+`wxt zip` (both targets) → `wxt submit` (`--dry-run` when requested) → GitHub
+release with the three zips (only when `dry_run` is false). Credentials come from
+the seven repository secrets in §5/§0; the owner has added all seven.
+
+**Chrome Web Store API version.** Empirical check against the installed
+`publish-browser-extension` 6.1.1 (the engine behind `wxt submit`):
+
+- With `CHROME_API_VERSION` unset, the tool uses **v1.1** (OAuth client +
+  refresh token) and prints:
+  `Chrome Web Store API v1.1 is deprecated and will stop working October 15th, 2026.`
+- **v2 does not accept refresh tokens.** It authenticates with a Google
+  **service account** JWT and requires `CHROME_PUBLISHER_ID`,
+  `CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL`, `CHROME_SERVICE_ACCOUNT_PRIVATE_KEY`.
+
+Owner decision (2026-09-20): **ship v1.1 now, migrate to v2 before 2026-10-15.**
+`release.yml` pins `CHROME_API_VERSION: v1.1` with an inline warning. Migration
+is tracked in the README "Releasing" section.
+
+**Dry-run fidelity.** `--dry-run` is asymmetric:
+
+- Firefox: performs a real AMO API call (fetching add-on details), so a passing
+  dry run genuinely validates the JWT issuer/secret and extension ID.
+- Chrome v1.1: logs "Getting an access token" but skips the token fetch and the
+  upload, so a passing dry run does **not** validate the Chrome credentials. Only
+  a real submit (or `publish-extension status`) exercises them.
+
+**Dispatch prerequisite.** `workflow_dispatch` only registers a workflow that
+exists on the default branch, so the first dry run must be triggered *after* this
+branch is merged to `main` (`Actions → Release → Run workflow`, leave
+`dry_run=true`).
+
 
