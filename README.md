@@ -138,10 +138,10 @@ npm run build:firefox   # -> .output/firefox-mv3
 ## Releasing
 
 Releases run from the **Release** workflow (`Actions → Release → Run workflow`).
-It installs, typechecks, tests, builds both zips, and submits them to the Chrome
-Web Store and Firefox Add-ons. The `dry_run` input defaults to **true** and only
-validates credentials — set it to false to actually upload, submit for review,
-and create a GitHub release.
+It installs, typechecks, tests, builds both zips, validates the Chrome Web Store
+credentials (`npm run check:chrome`), and submits to both stores. The `dry_run`
+input defaults to **true** and only builds and validates credentials — set it to
+false to actually upload, submit for review, and create a GitHub release.
 
 Submissions need these repository secrets:
 

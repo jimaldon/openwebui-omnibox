@@ -574,13 +574,22 @@ Owner decision (2026-09-20): **ship v1.1 now, migrate to v2 before 2026-10-15.**
 `release.yml` pins `CHROME_API_VERSION: v1.1` with an inline warning. Migration
 is tracked in the README "Releasing" section.
 
-**Dry-run fidelity.** `--dry-run` is asymmetric:
+**Dry-run fidelity.** `wxt submit --dry-run` is asymmetric on its own:
 
 - Firefox: performs a real AMO API call (fetching add-on details), so a passing
   dry run genuinely validates the JWT issuer/secret and extension ID.
 - Chrome v1.1: logs "Getting an access token" but skips the token fetch and the
-  upload, so a passing dry run does **not** validate the Chrome credentials. Only
-  a real submit (or `publish-extension status`) exercises them.
+  upload, so on its own a passing dry run does **not** validate Chrome.
+
+To close that gap, `release.yml` runs a `Validate Chrome credentials` step
+(`npm run check:chrome`, `scripts/validate-chrome-credentials.mjs`) before
+`wxt submit`, on every run including dry runs. It exchanges the refresh token at
+`oauth2.googleapis.com/token` and then performs an authenticated
+`GET chromewebstore.googleapis.com/chromewebstore/v1.1/items/{id}`, so a failure
+in the client ID/secret, the refresh token, or the item ID/ownership surfaces
+before anything is uploaded. The GET route and request shape were verified
+(unauthenticated and fake-bearer requests return 401, not 404); the success path
+still requires the real secrets to exercise.
 
 **Dispatch prerequisite.** `workflow_dispatch` only registers a workflow that
 exists on the default branch, so the first dry run must be triggered *after* this

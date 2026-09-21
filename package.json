@@ -11,6 +11,7 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "typecheck": "tsc --noEmit",
+    "check:chrome": "node scripts/validate-chrome-credentials.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "postinstall": "wxt prepare"
