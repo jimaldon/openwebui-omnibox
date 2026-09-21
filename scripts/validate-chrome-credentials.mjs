@@ -45,7 +45,7 @@ if (!tokenRes.ok || !token.access_token) {
 console.log('✔ Refresh token exchanged for an access token.');
 
 const itemRes = await fetch(
-  `https://chromewebstore.googleapis.com/chromewebstore/v1.1/items/${encodeURIComponent(CHROME_EXTENSION_ID)}`,
+  `https://chromewebstore.googleapis.com/chromewebstore/v1.1/items/${encodeURIComponent(CHROME_EXTENSION_ID)}?projection=DRAFT`,
   {
     headers: {
       Authorization: `Bearer ${token.access_token}`,
