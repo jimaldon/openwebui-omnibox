@@ -13,58 +13,61 @@ A browser extension that lets you quickly search your OpenWebUI instance directl
 
 ## Project Structure
 
+Built with [WXT](https://wxt.dev/). One source tree produces both the Chrome
+(Manifest V3, service worker) and Firefox (Manifest V3, background scripts)
+builds.
+
 ```
 openwebui-omnibox/
-├── firefox/          # Firefox add-on (Manifest V3, background scripts)
-│   ├── manifest.json
-│   ├── background.js
-│   ├── icons/
-│   ├── options/
-│   └── search/
-├── chrome/           # Chrome extension (Manifest V3, service worker)
-│   ├── manifest.json
-│   ├── background.js
-│   ├── icons/
-│   ├── options/
-│   └── search/
-├── package.json      # Build scripts
-├── README.md
-└── LICENSE
+├── entrypoints/
+│   ├── background.ts          # omnibox handler
+│   └── options/               # options page (index.html + main.ts)
+├── utils/
+│   └── url.ts                 # pure buildSearchUrl / parseOpenWebUIUrl helpers
+├── public/
+│   └── icon/{48,96}.png       # extension icons
+├── test/                      # vitest unit tests
+├── scripts/                   # release credential checks
+├── wxt.config.ts              # manifest + build config (single source of truth)
+├── package.json               # single version source
+├── .github/workflows/         # ci.yml, release.yml
+└── docs/wxt-migration.md      # migration notes and decisions
 ```
 
 ## Installation
 
-### Firefox
+### From the stores (Recommended)
 
-#### From Firefox Add-ons (Recommended)
+- **Firefox:** [OpenWebUI Omnibox on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/openwebui-omnibox/)
+- **Chrome:** search for "OpenWebUI Omnibox" on the Chrome Web Store
 
-1. Visit the [OpenWebUI Omnibox page](https://addons.mozilla.org/firefox/addon/openwebui-omnibox/) on Firefox Add-ons
-2. Click "Add to Firefox"
-3. Follow the prompts to install
+### Manual Installation (Developer)
 
-#### Manual Installation (Developer)
+Clone and build first:
 
-1. Clone this repository:
-   ```
-   git clone https://github.com/jimaldon/openwebui-omnibox.git
-   ```
-2. Open Firefox and navigate to `about:debugging`
-3. Click "This Firefox"
-4. Click "Load Temporary Add-on..."
-5. Navigate to the `firefox/` folder and select `manifest.json`
+```bash
+git clone https://github.com/jimaldon/openwebui-omnibox.git
+cd openwebui-omnibox
+npm install
+```
 
-### Chrome
+**Firefox:**
 
-#### Manual Installation (Developer)
+```bash
+npm run build:firefox
+```
 
-1. Clone this repository:
-   ```
-   git clone https://github.com/jimaldon/openwebui-omnibox.git
-   ```
-2. Open Chrome and navigate to `chrome://extensions`
-3. Enable "Developer mode" (toggle in the top right)
-4. Click "Load unpacked"
-5. Select the `chrome/` folder
+Then open `about:debugging` → "This Firefox" → "Load Temporary Add-on..." and
+select `.output/firefox-mv3/manifest.json`.
+
+**Chrome:**
+
+```bash
+npm run build
+```
+
+Then open `chrome://extensions`, enable "Developer mode", click "Load unpacked",
+and select the `.output/chrome-mv3` folder.
 
 ## Usage
 
@@ -93,6 +96,13 @@ Example: `o what is the capital of France?`
 npm install            # installs deps and runs `wxt prepare`
 npm run dev            # Chrome, with HMR (.output/chrome-mv3)
 npm run dev:firefox    # Firefox, with HMR (.output/firefox-mv3)
+```
+
+Run the checks before pushing:
+
+```bash
+npm run typecheck
+npm test
 ```
 
 ## Building
@@ -149,7 +159,7 @@ Submissions need these repository secrets:
 |---|---|
 | `CHROME_EXTENSION_ID` | Chrome Web Store developer dashboard (existing listing) |
 | `CHROME_CLIENT_ID` / `CHROME_CLIENT_SECRET` / `CHROME_REFRESH_TOKEN` | Google Cloud OAuth client (CWS API v1.1) |
-| `FIREFOX_EXTENSION_ID` | `{c7e8aea4-9959-4f22-a7fa-06d4e3e49434}` |
+| `FIREFOX_EXTENSION_ID` | AMO add-on ID — `2902186` (numeric) or the slug `openwebui-omnibox`. **Not** the `{…}` manifest GUID: `wxt submit` strips the braces and AMO then 404s. |
 | `FIREFOX_JWT_ISSUER` / `FIREFOX_JWT_SECRET` | https://addons.mozilla.org/developers/addon/api/key/ |
 
 Note: the Chrome Web Store API **v1.1** credentials above are deprecated and stop
