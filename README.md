@@ -36,10 +36,10 @@ openwebui-omnibox/
 ├── public/
 │   └── icon/{48,96}.png       # extension icons
 ├── test/                      # vitest unit tests
-├── scripts/                   # release credential checks
+├── scripts/                   # version + browser checks
 ├── wxt.config.ts              # manifest + build config (single source of truth)
 ├── package.json               # single version source
-├── .github/workflows/         # ci.yml, release.yml
+├── .github/workflows/         # ci.yml
 └── docs/wxt-migration.md      # migration notes and decisions
 ```
 
@@ -140,59 +140,7 @@ npm run build:firefox
 ```
 
 `npm run check:version` asserts that the version in both generated manifests
-matches `package.json`. CI and the release workflow run it automatically; the
-release workflow additionally refuses to reuse a `v<version>` tag that already
-points at a different commit.
-
-## Packaging for stores
-
-```bash
-# Chrome Web Store zip
-npm run zip
-
-# Firefox zip + AMO source zip
-npm run zip:firefox
-```
-
-Output archives are written to `.output/`:
-`openwebui-omnibox-<version>-chrome.zip`,
-`openwebui-omnibox-<version>-firefox.zip`, and
-`openwebui-omnibox-<version>-sources.zip`.
-
-### Building from source (Firefox / AMO reviewers)
-
-`npm run zip:firefox` also emits `openwebui-omnibox-<version>-sources.zip`.
-To reproduce the submitted Firefox build from it:
-
-```bash
-unzip openwebui-omnibox-<version>-sources.zip -d openwebui-omnibox-src
-cd openwebui-omnibox-src
-npm ci
-npm run build:firefox   # -> .output/firefox-mv3
-```
-
-## Releasing
-
-Releases run from the **Release** workflow (`Actions → Release → Run workflow`).
-It installs, typechecks, tests, builds both zips, validates the Chrome Web Store
-credentials (`npm run check:chrome`), and submits to both stores. The `dry_run`
-input defaults to **true** and only builds and validates credentials — set it to
-false to actually upload, submit for review, and create a GitHub release.
-
-Submissions need these repository secrets:
-
-| Secret | Source |
-|---|---|
-| `CHROME_EXTENSION_ID` | Chrome Web Store developer dashboard (existing listing) |
-| `CHROME_CLIENT_ID` / `CHROME_CLIENT_SECRET` / `CHROME_REFRESH_TOKEN` | Google Cloud OAuth client (CWS API v1.1) |
-| `FIREFOX_EXTENSION_ID` | AMO add-on ID — `2902186` (numeric) or the slug `openwebui-omnibox`. **Not** the `{…}` manifest GUID: `wxt submit` strips the braces and AMO then 404s. |
-| `FIREFOX_JWT_ISSUER` / `FIREFOX_JWT_SECRET` | https://addons.mozilla.org/developers/addon/api/key/ |
-
-Note: the Chrome Web Store API **v1.1** credentials above are deprecated and stop
-working **2026-10-15**. Before then, create a Google service account with access
-to the listing and switch the workflow to API **v2**
-(`CHROME_API_VERSION: v2`, `CHROME_PUBLISHER_ID`,
-`CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL`, `CHROME_SERVICE_ACCOUNT_PRIVATE_KEY`).
+matches `package.json`. CI runs it on every push and pull request.
 
 ## Troubleshooting
 
